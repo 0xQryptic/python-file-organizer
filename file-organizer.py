@@ -1,4 +1,6 @@
 import os
+import shutil
+
 
 # Defines a mapping from file extensions to their corresponding target folder names.
 # This dictionary is used to categorize files based on their type.
@@ -52,11 +54,20 @@ try:
             # Check if an extension exists.
             if file_extension:
                 target_folder_name = EXTENSION_TO_FOLDER_MAP.get(file_extension, DEFAULT_TARGET_FOLDER)
-                print(f"  File: {item_name:<30} -> Belongs in: {target_folder_name}")
             else:
-                # Handle files with no extension.
-                print(f"  File: {item_name:<30} -> Belongs in: {DEFAULT_TARGET_FOLDER} (No extension)")
-            
+                target_folder_name = DEFAULT_TARGET_FOLDER
+
+            target_folder_path = os.path.join(source_folder, target_folder_name)
+
+            os.makedirs(target_folder_path, exist_ok=True)
+
+            destination_file_path = os.path.join(target_folder_path, item_name)
+
+            try:
+                shutil.move(full_item_path, destination_file_path)
+                print(f"Moved '{item_name}' to '{target_folder_name}'.")
+            except Exception as e:
+                print(f"Error moving '{item_name}': {e}")        
 
 # Handle the case where the source folder does not exist.
 except FileNotFoundError:
